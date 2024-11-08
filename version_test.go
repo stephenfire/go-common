@@ -43,3 +43,37 @@ func TestNodeVersion(t *testing.T) {
 		}
 	}
 }
+
+func TestVersionString(t *testing.T) {
+	tests := []struct {
+		input string
+		err   bool
+		v     Version
+	}{
+		{"7.2.6", false, 7002006},
+		{"7x.2.6", true, 0},
+		{"7009.2.6", true, 0},
+		{"7.5.0", false, 7005000},
+	}
+
+	for _, test := range tests {
+		ver, err := NewVersion(test.input)
+		if err != nil {
+			if test.err {
+				t.Logf("input:%s error:%v check", test.input, err)
+			} else {
+				t.Fatalf("input:%s failed: %v", test.input, err)
+			}
+		} else {
+			if test.err {
+				t.Fatalf("input:%s should error, but didn't, got: %s", test.input, ver)
+			} else {
+				if ver != test.v {
+					t.Fatalf("input:%s should be %d but got %d", test.input, test.v, ver)
+				} else {
+					t.Logf("input:%s is %d check", test.input, ver)
+				}
+			}
+		}
+	}
+}
